@@ -20,7 +20,8 @@ async function run() {
         const foodsCollection = database.collection('foods');
         app.get('/foods', async (req, res) => {
             console.log('Hitting the database');
-            res.json(2)
+            const foods = await foodsCollection.find({});
+            res.json(foods)
         })
         //  Add New Food Item API
         app.post('/addFood', async (req, res) => {
