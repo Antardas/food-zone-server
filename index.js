@@ -21,14 +21,16 @@ async function run() {
         app.get('/foods', async (req, res) => {
             console.log('Hitting the database');
             const foods = await foodsCollection.find({});
-            res.json(foods)
+            const result = await foods.toArray();
+            console.log(result);
+            res.json(result);
         })
         //  Add New Food Item API
         app.post('/addFood', async (req, res) => {
             console.log('Hitting the Add Food Api');
             const { data } = req.body;
             console.log(data)
-            const result = await foodsCollection.insertOne(data)
+            const result = await foodsCollection.insertOne(data);
             res.json(result)
         })
     } finally {
