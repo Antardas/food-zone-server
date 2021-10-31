@@ -48,12 +48,52 @@ async function run() {
         })
 
         // set order specefic user
-        app.post('/orders', async (req, res) => {
+        app.post('/addOrders', async (req, res) => {
             console.log('Hitting add orders Collection');
             console.log(req.body);
-            const {data} = req.body;
+            const { data } = req.body;
             data.status = 'Pending';
             const result = await ordersCollection.insertOne(data);
+            res.json(result);
+        })
+
+        // Specific user ordered products
+
+        app.get('/getUserOrders/:email', async (req, res) => {
+            console.log('Hitting User Orders Collection');
+            const email = req.params.email
+            const query = { email: email };
+            const orders = await ordersCollection.find(query);
+            const result = await orders.toArray();
+            res.json(result);
+        });
+
+        // Get all order 
+
+        app.get('/allOrders', async (req, res) => {
+            console.log('Hitting all Orders api');
+            const orders = await ordersCollection.find({});
+            const result = await orders.toArray();
+            res.json(result);
+        })
+
+        // Approve Order
+        app.put('/approved/:id', async (req, res) => {
+            console.log('Hitting all Approved api');
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const orders = await ordersCollection.findOne(query);
+            console.log(orders);
+            res.json(result);
+        })
+
+        // Delete user order 
+
+        app.delete('/deleteOrder/:id', async (req, res) => {
+            console.log('Deleteing User Order delete api');
+            const id = req.params.id
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query); 
             res.json(result);
         })
     } finally {
