@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
-const {MongoClient} = require('mongodb')
+const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId
 require('dotenv').config();
 
 // Middle Ware
@@ -18,23 +19,45 @@ async function run() {
         await client.connect();
         const database = client.db('food-delivery')
         const foodsCollection = database.collection('foods');
+        const ordersCollection = database.collection('orders')
+        // fetch all food
         app.get('/foods', async (req, res) => {
-            console.log('Hitting the database');
+            console.log('Hitting the get all food api');
             const foods = await foodsCollection.find({});
             const result = await foods.toArray();
-            console.log(result);
             res.json(result);
         })
         //  Add New Food Item API
         app.post('/addFood', async (req, res) => {
             console.log('Hitting the Add Food Api');
             const { data } = req.body;
+            data.quantity = 1;
             console.log(data)
             const result = await foodsCollection.insertOne(data);
             res.json(result)
         })
+
+        // Get specefic food
+        app.get('/foods/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await foodsCollection.findOne(query);
+            console.log(result)
+
+            res.json(result);
+        })
+
+        // set order specefic user
+        app.post('/orders', async (req, res) => {
+            console.log('Hitting add orders Collection');
+            console.log(req.body);
+            const {data} = req.body;
+            data.status = 'Pending';
+            const result = await ordersCollection.insertOne(data);
+            res.json(result);
+        })
     } finally {
-        
+
     }
 }
 run().catch(console.dir);
