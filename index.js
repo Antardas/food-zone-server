@@ -81,9 +81,17 @@ async function run() {
         app.put('/approved/:id', async (req, res) => {
             console.log('Hitting all Approved api');
             const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const orders = await ordersCollection.findOne(query);
-            console.log(orders);
+            const filter = { _id: ObjectId(id) };
+/*             const filterProduct = await ordersCollection.findOne(filter);
+            console.log(filterProduct) */
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: 'Aprroved'
+                }
+            }
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            console.log(result);
             res.json(result);
         })
 
